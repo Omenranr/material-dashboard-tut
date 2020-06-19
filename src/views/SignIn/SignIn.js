@@ -15,6 +15,10 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import { Facebook as FacebookIcon, Google as GoogleIcon } from 'icons';
 
+//REDUX IMPORTS
+import { connect } from "react-redux"
+import { login } from "../../actions/authActions"
+
 const schema = {
   email: {
     presence: { allowEmpty: false, message: 'is required' },
@@ -170,9 +174,13 @@ const SignIn = props => {
     }));
   };
 
-  const handleSignIn = event => {
+  const handleSignIn = (event) => {
     event.preventDefault();
-    history.push('/');
+    setFormState(formState => ({
+      ...formState,
+      loading: true
+    }))
+    props.login(formState.values)
   };
 
   const hasError = field =>
@@ -344,4 +352,10 @@ SignIn.propTypes = {
   history: PropTypes.object
 };
 
-export default withRouter(SignIn);
+const mapStateToProps = state => ({
+  isAuthenticated: state.auth.isAuthenticated,
+  error: state.error,
+  login: PropTypes.func.isRequired
+})
+
+export default connect(mapStateToProps, { login })(withRouter(SignIn))
